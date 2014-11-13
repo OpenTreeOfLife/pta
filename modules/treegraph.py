@@ -133,9 +133,13 @@ def proctree(r, i=1):
     for i,v in enumerate(gv.vertices()):
         idx[int(v)] = i
         taxid = gv.vertex_taxid[v]
-        name = gv.taxid_name(taxid) if taxid else ''#'node%s' % int(v)
+        try:
+            name = gv.vertex_name[v]
+        except:
+            name = gv.taxid_name(taxid) if taxid else ''#'node%s' % int(v)
         isleaf = v.out_degree()==0
-        d = dict(label=name, isleaf=isleaf, strees=list(gv.vertex_strees[v]))
+        d = dict(label=name, isleaf=isleaf, strees=list(gv.vertex_strees[v]),
+                 altlabel=name)
         if taxid: d['taxid'] = taxid
         ## if dist: d['dist'] = dist[v]
         if pos and pos[v]:
@@ -144,8 +148,6 @@ def proctree(r, i=1):
             d['fixed'] = True
         d['color'] = vcolor[v]
         d['size'] = vsize[v]
-        ## if vtext: d['label'] = vtext[v]
-        d['altlabel'] = gv.vertex_name[v]
         nodes.append(d)
     for e in gv.edges():
         source = idx[int(e.source())]
