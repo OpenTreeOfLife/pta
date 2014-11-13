@@ -3,6 +3,16 @@
 {{response.files.append("http://d3js.org/d3.v3.min.js")}}
 {{extend 'layout.html'}}
 
+<div style="padding-bottom:2em">
+<p>Mouse wheel: zoom in/out. Click and drag nodes to move them; click the
+background to move the whole graph.</p>
+
+<p><span style="color:blue">Blue lines</span> trace the
+phylogeny; <span style="color:red">red lines</span> trace taxonomy;
+<span style="color:green">green lines</span> trace congruence between
+phylogeny and taxonomy.</p>
+</div>
+
 {{if data:}}
 {{import json}}
 <div class="figure">

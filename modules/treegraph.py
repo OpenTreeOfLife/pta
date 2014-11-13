@@ -133,7 +133,7 @@ def proctree(r, i=1):
     for i,v in enumerate(gv.vertices()):
         idx[int(v)] = i
         taxid = gv.vertex_taxid[v]
-        name = gv.taxid_name(taxid) if taxid else 'node%s' % int(v)
+        name = gv.taxid_name(taxid) if taxid else ''#'node%s' % int(v)
         isleaf = v.out_degree()==0
         d = dict(label=name, isleaf=isleaf, strees=list(gv.vertex_strees[v]))
         if taxid: d['taxid'] = taxid
