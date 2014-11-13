@@ -1,0 +1,8 @@
+{{
+###
+# response._vars contains the dictionary returned by the controller action
+###
+import json
+response.write(XML(json.dumps(response._vars['data'], indent=2)))
+response.headers['Content-Type']='application/json'
+}}
