@@ -40,5 +40,15 @@ curl --data-urlencode data@ot_20.json http://localhost:8000/pta/default/index.js
 The response will be json data object with a key `treeids` mapping to
 a list (possibly empty) of tree id values corresponding to trees in
 the nexson file that were processed. The phylogeny-taxonomy alignment
-data can be retrieved from the json object using these tree ids as
-keys.
+data for each tree can be retrieved from the json object using these
+tree ids as keys.
+
+## Caveats
+
+* At present little if any sanity checking is done and informative error
+  messages are nonexistent.
+
+* **Please note**, the app process will use about 1.8 GB of RAM,
+  because it keeps the entire Open Tree Taxonomy in memory. After
+  launching the app, the first request to the service will be a bit
+  slow as this is loaded.
