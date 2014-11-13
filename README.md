@@ -30,6 +30,12 @@ Start the server, which will listen on localhost port 8000 by default:
 python ./web2py.py
 ```
 
+## As a web app
+
+Basic functionality is available by visiting http://localhost:8000/pta
+
+## As a web service
+
 Currently the service expects an entire study nexson file to be POSTed
 in a `data` parameter. For example to submit a file called `ot_20.json`:
 
