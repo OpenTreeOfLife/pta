@@ -5,4 +5,5 @@
 import json
 response.write(XML(json.dumps(response._vars['data'], indent=2)))
 response.headers['Content-Type']='application/json'
+response.headers['Access-Control-Allow-Origin']='*'
 }}
