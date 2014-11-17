@@ -198,12 +198,12 @@ def nexson2ptag(nexson):
                     rv[treeid] = proctree(r)
     else:
         # this is older Nexson (1.0.0), possibly from the curation app
-        for otus_collection in d['otus'].iteritems():
+        for otus_collection in d['otus']:
             for otudata in otus_collection:
                 otuid = otudata['@id']
                 assert otuid not in otu_id2data
                 otu_id2data[otuid] = otudata
-        for trees_collection in d['trees'].iteritems():
+        for trees_collection in d['trees']:
             for treedata in otus_collection:
                 treeid = treedata['@id']
                 treeids.append(treeid)
