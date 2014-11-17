@@ -204,7 +204,7 @@ def nexson2ptag(nexson):
                 assert otuid not in otu_id2data
                 otu_id2data[otuid] = otudata
         for trees_collection in d['trees']:
-            for treedata in otus_collection:
+            for treedata in trees_collection:
                 treeid = treedata['@id']
                 treeids.append(treeid)
                 treedata['treeid'] = treeid
