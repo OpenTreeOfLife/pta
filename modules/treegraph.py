@@ -42,7 +42,9 @@ def buildtree(t, otu_id2data):
         # older Nexson 1.0.0
         edges_by_source_id = {} 
         for e in t['edge']:
-            edges_by_source_id[ e['@source'] ] = e
+            if not edges_by_source_id.has_key( e['@source'] ):
+                edges_by_source_id[ e['@source'] ] = {}
+            edges_by_source_id[ e['@source'] ][ e['@id'] ] = e
     for nid, ed in edges_by_source_id.iteritems():
         n = node_id2data[nid]
         for e in ed.itervalues():
@@ -199,12 +201,12 @@ def nexson2ptag(nexson):
     else:
         # this is older Nexson (1.0.0), possibly from the curation app
         for otus_collection in d['otus']:
-            for otudata in otus_collection:
+            for otudata in otus_collection['otu']:
                 otuid = otudata['@id']
                 assert otuid not in otu_id2data
                 otu_id2data[otuid] = otudata
         for trees_collection in d['trees']:
-            for treedata in trees_collection:
+            for treedata in trees_collection['tree']:
                 treeid = treedata['@id']
                 treeids.append(treeid)
                 treedata['treeid'] = treeid
