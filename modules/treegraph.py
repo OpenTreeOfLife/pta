@@ -6,7 +6,14 @@ g = tg.load_taxonomy_graph('applications/pta/static/ott2.8.gt.gz')
 
 def buildtree(t, otu_id2data):
     from ivy.tree import Node
-    node_id2data = t['nodeById']
+    if t.has_key('nodeById'):
+        # newer Nexson 1.2.1
+        node_id2data = t['nodeById']
+    else:
+        # older Nexson 1.0.0
+        node_id2data = {} 
+        for n in t['node']:
+            node_id2data[ n['@id'] ] = n
     root = None
     for i, d in node_id2data.iteritems():
         n = Node()
@@ -28,7 +35,15 @@ def buildtree(t, otu_id2data):
                 ## print t['nexson_file'], 'missing', oid
         n.nexson_id = i
         d['node'] = n
-    for nid, ed in t['edgeBySourceId'].iteritems():
+    if t.has_key('edgeBySourceId'):
+        # newer Nexson 1.2.1
+        edges_by_source_id = t['edgeBySourceId']
+    else:
+        # older Nexson 1.0.0
+        edges_by_source_id = {} 
+        for e in t['edge']:
+            edges_by_source_id[ e['@source'] ] = e
+    for nid, ed in edges_by_source_id.iteritems():
         n = node_id2data[nid]
         for e in ed.itervalues():
             cd = node_id2data[e['@target']]
@@ -165,20 +180,39 @@ def nexson2ptag(nexson):
     d = json.loads(nexson, encoding='utf-8')['nexml']
     otu_id2data = {}
     rv = {}
-    for k,v in d['otusById'].iteritems():
-        for otuid, otudata in v['otuById'].iteritems():
-            assert otuid not in otu_id2data
-            otu_id2data[otuid] = otudata
-
     treeids = []
-    for k,v in d['treesById'].iteritems():
-        for treeid, treedata in v['treeById'].iteritems():
-            treeids.append(treeid)
-            treedata['treeid'] = treeid
-            r = buildtree(treedata, otu_id2data)
-            lvs = r.leaves()
-            prop = float(len([ lf for lf in lvs if lf.taxid ]))/len(lvs)
-            if prop > 0.8 and len(lvs) < 5000:
-                rv[treeid] = proctree(r)
+    if d.has_key('otusById'):
+        # we're using a newer version of Nexson, probably 1.2.1
+        for k,v in d['otusById'].iteritems():
+            for otuid, otudata in v['otuById'].iteritems():
+                assert otuid not in otu_id2data
+                otu_id2data[otuid] = otudata
+        for k,v in d['treesById'].iteritems():
+            for treeid, treedata in v['treeById'].iteritems():
+                treeids.append(treeid)
+                treedata['treeid'] = treeid
+                r = buildtree(treedata, otu_id2data)
+                lvs = r.leaves()
+                prop = float(len([ lf for lf in lvs if lf.taxid ]))/len(lvs)
+                if prop > 0.8 and len(lvs) < 5000:
+                    rv[treeid] = proctree(r)
+    else:
+        # this is older Nexson (1.0.0), possibly from the curation app
+        for otus_collection in d['otus'].iteritems():
+            for otudata in otus_collection:
+                otuid = otudata['@id']
+                assert otuid not in otu_id2data
+                otu_id2data[otuid] = otudata
+        for trees_collection in d['trees'].iteritems():
+            for treedata in otus_collection:
+                treeid = treedata['@id']
+                treeids.append(treeid)
+                treedata['treeid'] = treeid
+                r = buildtree(treedata, otu_id2data)
+                lvs = r.leaves()
+                prop = float(len([ lf for lf in lvs if lf.taxid ]))/len(lvs)
+                if prop > 0.8 and len(lvs) < 5000:
+                    rv[treeid] = proctree(r)
+
     rv['treeids'] = treeids
     return rv
