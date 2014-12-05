@@ -194,12 +194,13 @@ def index_taxa(fresh=False):
             if cur.execute(sql, (studyid, mtime)).fetchone()[0]:
                 print 'ignoring', fn
                 continue
-            print fn#, mtime
+            print 'indexing', fn#, mtime
             with codecs.open(x, encoding='utf-8') as f:
                 d = json.load(f)['nexml']
                 try:
                     citation = d['^ot:studyPublicationReference']
                 except KeyError:
+                    print fn, ': no citation'
                     continue
                 otu_id2data = {}
                 for k,v in d['otusById'].iteritems():
@@ -209,12 +210,16 @@ def index_taxa(fresh=False):
 
                 for k,v in d['treesById'].iteritems():
                     for treeid, treedata in v['treeById'].iteritems():
+                        print 'inserting', treeid
+                        nexecs = 0
                         treedata['nexson_file'] = x
                         treedata['treeid'] = treeid
                         r = proctree(treedata, otu_id2data)
                         lvs = r.leaves()
                         leaf_taxids = set([ x.taxid for x in lvs if x.taxid ])
                         if len(leaf_taxids) < 3:
+                            print (treeid, ': only', len(leaf_taxids),
+                                   'leaves mapped, skipping')
                             continue
                         for taxid in leaf_taxids:
                             name = g.taxid_unique_name(taxid)
@@ -222,7 +227,9 @@ def index_taxa(fresh=False):
                                    mtime, citation, treeid, taxid, name, 1, 0)
                             try:
                                 cur.execute(INS, row)
+                                nexecs += 1
                             except sqlite3.IntegrityError:
+                                print fn, ': can\'t execute', row
                                 pass
                         rps = [ tg.taxid_rootpath(g, x) for x in leaf_taxids
                                 if g.taxid_vertex.get(x) ]
@@ -231,7 +238,9 @@ def index_taxa(fresh=False):
                         row = (fnbase, mtime, citation, treeid, mrca, name, 0, 1)
                         try:
                             cur.execute(INS, row)
+                            nexecs += 1
                         except sqlite3.IntegrityError:
+                            print fn, ': can\'t execute', row
                             pass
                         internal_taxids = set()
                         for rp in rps:
@@ -244,8 +253,11 @@ def index_taxa(fresh=False):
                                    mtime, citation, treeid, taxid, name, 0, 0)
                             try:
                                 cur.execute(INS, row)
+                                nexecs += 1
                             except sqlite3.IntegrityError:
+                                print fn, ': can\'t execute', row
                                 pass
+                print 'finished:', nexecs
                 con.commit()
     if fresh:
         cur.execute('create index studyid_idx on main (studyid)')
