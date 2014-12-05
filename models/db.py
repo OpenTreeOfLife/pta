@@ -85,3 +85,21 @@ response.generic_patterns = ['*'] if request.is_local else []
 
 ## after defining tables, uncomment below to enable auditing
 # auth.enable_record_versioning(db)
+
+db = DAL('sqlite://phylesystem-taxon-index.db',
+         pool_size=1, check_reserved=['all'])
+
+db.define_table(
+    'main',
+    Field('studyid', 'string'),
+    Field('mtime', 'integer'),
+    Field('citation', 'text'),
+    Field('treeid', 'string'),
+    Field('taxid', 'integer'),
+    Field('name', 'string'),
+    Field('otu', 'integer'),
+    Field('tree_mrca', 'integer'),
+    migrate=False
+    )
+    
+    

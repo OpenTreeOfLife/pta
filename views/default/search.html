@@ -1,0 +1,29 @@
+{{extend 'layout.html'}}
+{{=form}}
+
+{{if rows:}}
+<table>
+<tr><th>Tree</th><th>MRCA</th><th>Citation</th></tr>
+{{for r,m in zip(rows, mrcas):}}
+<tr>
+<td>{{=A(r.treeid, _href=URL(f='view2',args=[r.studyid,r.treeid]))}}</td>
+<td>{{=m}}</td>
+<td>{{=r.citation}}</td>
+</tr>
+{{pass}}
+</table>
+{{pass}}
+
+
+<script type="text/javascript">
+$(document).ready(function(){
+
+  $(function() {
+    $("#no_table_term").autocomplete({
+      source: "{{=URL('default', 'name_search_autocomplete')}}",
+      minLength: 2
+    });
+  });
+  
+});
+</script>

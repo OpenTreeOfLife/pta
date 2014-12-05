@@ -1,6 +1,7 @@
 errors/
 sessions/
 uploads/
+static/ptag
 *~
 
 # Byte-compiled / optimized / DLL files

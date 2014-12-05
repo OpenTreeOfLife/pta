@@ -1,4 +1,8 @@
 import ivy, json
+from peyotl.api.phylesystem_api import PhylesystemAPI
+psapi = PhylesystemAPI(get_from='local').phylesystem_obj
+from git import Git
+
 from ivy import treegraph as tg
 gt = tg.gt
 
@@ -178,8 +182,12 @@ def proctree(r, i=1):
 
     return dict(nodes=nodes, links=links)
 
-def nexson2ptag(nexson):
-    d = json.loads(nexson, encoding='utf-8')['nexml']
+def nexson2ptag(nexson, only_treeid=None):
+    # nexson is a string
+    try:
+        d = json.loads(nexson, encoding='utf-8')['nexml']
+    except:
+        d = json.loads(nexson, encoding='utf-8')['data']['nexml']
     otu_id2data = {}
     rv = {}
     treeids = []
@@ -191,6 +199,8 @@ def nexson2ptag(nexson):
                 otu_id2data[otuid] = otudata
         for k,v in d['treesById'].iteritems():
             for treeid, treedata in v['treeById'].iteritems():
+                if only_treeid and treeid != treeid:
+                    continue
                 treeids.append(treeid)
                 treedata['treeid'] = treeid
                 r = buildtree(treedata, otu_id2data)
@@ -201,6 +211,7 @@ def nexson2ptag(nexson):
     else:
         # this is older Nexson (1.0.0), possibly from the curation app
         for otus_collection in d['otus']:
+            print otus_collection
             for otudata in otus_collection['otu']:
                 otuid = otudata['@id']
                 assert otuid not in otu_id2data
@@ -208,6 +219,8 @@ def nexson2ptag(nexson):
         for trees_collection in d['trees']:
             for treedata in trees_collection['tree']:
                 treeid = treedata['@id']
+                if only_treeid and treeid != treeid:
+                    continue
                 treeids.append(treeid)
                 treedata['treeid'] = treeid
                 r = buildtree(treedata, otu_id2data)
@@ -218,3 +231,9 @@ def nexson2ptag(nexson):
 
     rv['treeids'] = treeids
     return rv
+
+def study_timestamp(studyid):
+    repo = psapi.get_shard(studyid).path
+    g = Git(repo)
+    pth = psapi.get_filepath_for_study(studyid)
+    return git.log('--format=%ct', pth).split('\n')[0]
