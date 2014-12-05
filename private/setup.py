@@ -73,6 +73,48 @@ def proctree(t, otu_id2data):
     ivy.tree.index(root)
     return root
 
+def graph_json(g, dist=None, pos=None, ecolor=None, ewidth=None,
+               vcolor=None, vsize=None, vtext=None, fp=None):
+    nodes = []
+    links = []
+    idx = {}
+
+    if pos:
+        xmin = min([ pos[x][0] for x in g.vertices() ])
+        ymin = min([ pos[x][1] for x in g.vertices() ])
+        for x in g.vertices(): pos[x] = [pos[x][0]-xmin, pos[x][1]-ymin]
+
+    for i,v in enumerate(g.vertices()):
+        idx[int(v)] = i
+        taxid = g.vertex_taxid[v]
+        name = g.taxid_name(taxid) if taxid else ''#'node%s' % int(v)
+        isleaf = v.out_degree()==0
+        d = dict(label=name, isleaf=isleaf, strees=list(g.vertex_strees[v]))
+        if taxid: d['taxid'] = taxid
+        if dist: d['dist'] = dist[v]
+        if pos and pos[v]:
+            x, y = pos[v]
+            d['x'] = x; d['y'] = y
+            d['fixed'] = True
+        if vcolor: d['color'] = vcolor[v]
+        if vsize: d['size'] = vsize[v]
+        if vtext: d['label'] = vtext[v]
+        d['altlabel'] = g.vertex_name[v]
+        nodes.append(d)
+    for e in g.edges():
+        source = idx[int(e.source())]
+        target = idx[int(e.target())]
+        strees = g.edge_strees[e]
+        d = dict(source=source, target=target, strees = list(strees),
+                 taxedge=bool(g.edge_in_taxonomy[e]))
+        if ecolor: d['color'] = ecolor[e]
+        if ewidth: d['width'] = ewidth[e]
+        links.append(d)
+    if fp:
+        json.dump(dict(nodes=nodes, links=links), fp, indent=3)
+    else:
+        return json.dumps(dict(nodes=nodes, links=links), indent=3)
+
 def make_graph_json(g, r, i, outfname):
     tg.map_stree(g, r)
     taxids = set()
@@ -156,8 +198,8 @@ def make_graph_json(g, r, i, outfname):
     pos = gt.sfdp_layout(gv, pos=pos, pin=pin, eweight=gv.wt, multilevel=False)
 
     with gzip.open(outfname, 'wb') as f:
-        tg.graph_json(gv, pos=pos, ecolor=ecolor, ewidth=ewidth,
-                      vcolor=vcolor, vsize=vsize, fp=f)
+        graph_json(gv, pos=pos, ecolor=ecolor, ewidth=ewidth,
+                   vcolor=vcolor, vsize=vsize, vtext=gv.vertex_name, fp=f)
 
 def index_taxa(fresh=False):
     g = load_ott_graph()
@@ -277,7 +319,11 @@ def make_ptags():
             path, fn = os.path.split(x)
             fnbase = os.path.splitext(fn)[0]
             with codecs.open(x, encoding='utf-8') as f:
-                d = json.load(f)['nexml']
+                try:
+                    d = json.load(f)['nexml']
+                except KeyError:
+                    print fn, ': not a nexson file?'
+                    continue
                 otu_id2data = {}
                 for k,v in d['otusById'].iteritems():
                     for otuid, otudata in v['otuById'].iteritems():
@@ -342,5 +388,5 @@ def main():
         subprocess.check_call(cmd.split(), stdout=sys.stdout, stderr=sys.stderr)
         shutil.rmtree(d)
 
-if __name__ == '__main__':
-    main()
+## if __name__ == '__main__':
+##     main()
