@@ -30,7 +30,8 @@ def load_ott_graph():
     staticdir = join(PTA_BASE, 'static')
     localpath = join(staticdir, OTT_GRAPH_FILENAME)
     if not os.path.exists(localpath):
-        remote = 'https://dl.dropboxusercontent.com/u/1939917/'+fname
+        remote = ('https://dl.dropboxusercontent.com/u/1939917/'+
+                  OTT_GRAPH_FILENAME)
         cmd = 'curl -o {} {}'.format(localpath, remote)
         subprocess.check_call(cmd.split(), stdout=sys.stdout, stderr=sys.stderr)
     return tg.load_taxonomy_graph(localpath)
@@ -160,7 +161,10 @@ def make_graph_json(g, r, i, outfname):
 
 def index_taxa(fresh=False):
     g = load_ott_graph()
-    con = sqlite3.connect('phylesystem-taxon-index.db')
+    dbfilename = 'phylesystem-taxon-index.db'
+    dbdir = join(PTA_BASE, 'databases')
+    dbpath = join(dbdir, dbfilename)
+    con = sqlite3.connect(dbpath)
     if fresh:
         cur = con.cursor()
         cur.execute('drop table if exists main')
@@ -188,6 +192,7 @@ def index_taxa(fresh=False):
             sql = ('select count(*) from main where '
                    '(studyid = ?) and (mtime = ?)')
             if cur.execute(sql, (studyid, mtime)).fetchone()[0]:
+                print 'ignoring', fn
                 continue
             print fn#, mtime
             with codecs.open(x, encoding='utf-8') as f:
