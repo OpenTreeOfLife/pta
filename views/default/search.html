@@ -4,7 +4,7 @@
 {{if rows:}}
 <table>
 <tr><th>Tree</th><th>MRCA</th><th>Citation</th></tr>
-{{for r,m in zip(rows, mrcas):}}
+{{for r,m in rows:}}
 <tr>
 <td>{{=A(r.treeid, _href=URL(f='view2',args=[r.studyid,r.treeid]))}}</td>
 <td>{{=m}}</td>

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os, treegraph, requests
+import os, treegraph, requests, json
 from gzip import GzipFile
 
 def index():
@@ -32,37 +32,44 @@ def view():
     d = session.get(k)
     return dict(data=d)
 
+def _ptag_file_exists(studyid, treeid, mtime):
+    ptag = '{}/static/ptag/{}.{}.{}.ptag.json.gz'.format(
+        request.folder, studyid, treeid, mtime)
+    return os.path.exists(ptag)
+
 def view2():
     studyid, treeid = request.args
     ts = treegraph.study_timestamp(studyid)
     ptag = '{}/static/ptag/{}.{}.{}.ptag.json.gz'.format(
         request.folder, studyid, treeid, ts)
     if os.path.exists(ptag):
-        data = GzipFile(ptag).read()
+        data = XML(GzipFile(ptag).read())
     else:
         u = 'http://api.opentreeoflife.org/v2/study/{}.json'
         p = dict(output_nexml2json='1.2.1')
         r = requests.get(u.format(studyid), params=p)
-        data = treegraph.nexson2ptag(r.text, treeid)[treeid]
+        data = XML(json.dumps(treegraph.nexson2ptag(r.text, treeid)[treeid]))
     return dict(data=data)
 
 def search():
     form = SQLFORM.factory(Field('term', 'string'))
     t = db.main
     f = t.name
-    rows = []; mrcas = []
+    rv = []
     if form.process(message_onsuccess=None).accepted:
         s = form.vars.term
         if s:
             q = f.like(s) & (t.otu==1)
-            rows = db(q).select(t.studyid, t.treeid, t.citation, distinct=True)
+            rows = db(q).select(t.studyid, t.treeid, t.citation, t.mtime,
+                                distinct=True)
             for r in rows:
-                q = ((t.studyid==r.studyid)&
-                     (t.treeid==r.treeid)&
-                     (t.tree_mrca==1))
-                n = db(q).select(t.name, limitby=(0,1)).first().name
-                mrcas.append(n)
-    return dict(form=form, rows=rows, mrcas=mrcas)
+                if _ptag_file_exists(r.studyid, r.treeid, r.mtime):
+                    q = ((t.studyid==r.studyid)&
+                         (t.treeid==r.treeid)&
+                         (t.tree_mrca==1))
+                    n = db(q).select(t.name, limitby=(0,1)).first().name
+                    rv.append((r, n))
+    return dict(form=form, rows=rv)
 
 def name_search_autocomplete():
     rv = []

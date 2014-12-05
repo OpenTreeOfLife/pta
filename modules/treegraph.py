@@ -1,7 +1,7 @@
 import ivy, json
 from peyotl.api.phylesystem_api import PhylesystemAPI
 psapi = PhylesystemAPI(get_from='local').phylesystem_obj
-import git
+from git import Git
 from ivy import treegraph as tg
 gt = tg.gt
 
@@ -233,6 +233,6 @@ def nexson2ptag(nexson, only_treeid=None):
 
 def study_timestamp(studyid):
     repo = psapi.get_shard(studyid).path
-    g = git.Git(repo)
+    g = Git(repo)
     pth = psapi.get_filepath_for_study(studyid)
-    return git.log('--format=%ct', pth).split('\n')[0]
+    return g.log('--format=%ct', pth).split('\n')[0]
