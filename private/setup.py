@@ -206,6 +206,8 @@ def index_taxa(fresh=False):
     dbfilename = 'phylesystem-taxon-index.db'
     dbdir = join(PTA_BASE, 'databases')
     dbpath = join(dbdir, dbfilename)
+    if not os.path.exists(dbpath):
+        fresh = True
     con = sqlite3.connect(dbpath)
     if fresh:
         cur = con.cursor()
@@ -238,7 +240,11 @@ def index_taxa(fresh=False):
                 continue
             print 'indexing', fn#, mtime
             with codecs.open(x, encoding='utf-8') as f:
-                d = json.load(f)['nexml']
+                try:
+                    d = json.load(f)['nexml']
+                except KeyError:
+                    print fn, ': not a nexson file?'
+                    continue
                 try:
                     citation = d['^ot:studyPublicationReference']
                 except KeyError:
