@@ -52,7 +52,12 @@ def view2():
     return dict(data=data)
 
 def search():
-    form = SQLFORM.factory(Field('term', 'string'))
+    form = SQLFORM.factory(
+        Field('term', 'string'),
+        Field('option', 'string', requires=IS_IN_SET(
+            ['anywhere', 'leaves only', 'mrca only'],
+            zero=None))
+        )
     t = db.main
     f = t.name
     rv = []
