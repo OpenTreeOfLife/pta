@@ -53,18 +53,28 @@ def view2():
 
 def search():
     form = SQLFORM.factory(
-        Field('term', 'string'),
-        Field('option', 'string', requires=IS_IN_SET(
-            ['anywhere', 'leaves only', 'mrca only'],
-            zero=None))
+        Field('search_term', requires=IS_NOT_EMPTY(), label='Taxon'),
+        Field('search_option', requires=IS_IN_SET((
+            ('0', 'represented anywhere in the tree'),
+            ('1', 'an OTU mapped to a leaf node(s)'),
+            ('2', 'the MRCA of all leaves')
+            ), zero=None), label='where taxon is'),
+        submit_button='Find trees',
+        table_name='myform'
         )
     t = db.main
     f = t.name
     rv = []
-    if form.process(message_onsuccess=None).accepted:
-        s = form.vars.term
-        if s:
-            q = f.like(s) & (t.otu==1)
+    if form.process(message_onsuccess=None, keepvalues=True).accepted:
+        term = form.vars.search_term
+        opt = form.vars.search_option or '0'
+        if term:
+            print term
+            q = f.like(term)
+            if opt == '1':
+                q &= (t.otu==1)
+            elif opt == '2':
+                q &= (t.tree_mrca==1)
             rows = db(q).select(t.studyid, t.treeid, t.citation, t.mtime,
                                 distinct=True)
             for r in rows:
@@ -79,10 +89,15 @@ def search():
 def name_search_autocomplete():
     rv = []
     term = request.vars.term or ''
+    opt = request.vars.search_option or '0'
     t = db.main
     f = t.name
-    if len(term) > 2:
-        q = f.like('%{}%'.format(term)) & (t.otu==1)
+    if term:
+        q = f.like('{}%'.format(term))
+        if opt == '1':
+            q &= (t.otu==1)
+        elif opt == '2':
+            q &= (t.tree_mrca==1)
         rows = db(q).select(f, distinct=True, orderby=f, limitby=(0,25))
         rv = [ x.name for x in rows ]
     return response.json(rv)

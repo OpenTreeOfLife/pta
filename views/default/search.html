@@ -1,4 +1,7 @@
 {{extend 'layout.html'}}
+
+<h3>Find phylogeny-taxonomy alignments by taxon</h3>
+
 {{=form}}
 
 {{if rows:}}
@@ -12,18 +15,29 @@
 </tr>
 {{pass}}
 </table>
+{{else:}}
+{{if form.vars.search_term:}}
+The taxon appears to be in one or more trees that could not be aligned
+to taxonomy.
+{{pass}}
 {{pass}}
 
 
 <script type="text/javascript">
-$(document).ready(function(){
-
-  $(function() {
-    $("#no_table_term").autocomplete({
-      source: "{{=URL('default', 'name_search_autocomplete')}}",
-      minLength: 2
+$(document).ready( function() {
+    var u = "{{=URL('default', 'name_search_autocomplete')}}";
+    $("#myform_search_term").autocomplete({
+	source: function(request, response) {
+	    $.ajax({
+		url: u, dataType: "json",
+		data: {
+		    term: request.term,
+		    search_option: $("#myform_search_option").val()
+		},
+		success: function(data) { response(data); }
+	    });
+	},
+	minLength: 2
     });
-  });
-  
 });
 </script>
