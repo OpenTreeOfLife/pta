@@ -10,6 +10,7 @@ from git import Git
 PTA_BASE = '/home/rree/src/pta'
 PHYLESYSTEM_SHARDS = '/home/rree/src/phylesystem/shards'
 OTT_GRAPH_FILENAME = 'ott2.8.gt.gz'
+PTAG_DIR = join(PTA_BASE, 'static', 'ptag')
 
 ap = argparse.ArgumentParser()
 ap.add_argument('--fetch-ptags', dest='fetch_ptags', action='store_true')
@@ -233,11 +234,12 @@ def index_taxa(fresh=False):
             path, fn = os.path.split(x)
             fnbase = os.path.splitext(fn)[0]
             studyid = fnbase
-            sql = ('select count(*) from main where '
-                   '(studyid = ?) and (mtime = ?)')
-            if cur.execute(sql, (studyid, mtime)).fetchone()[0]:
-                print 'ignoring', fn
-                continue
+            if not fresh:
+                sql = ('select count(*) from main where '
+                       '(studyid = ?) and (mtime = ?)')
+                if cur.execute(sql, (studyid, mtime)).fetchone()[0]:
+                    print 'ignoring', fn
+                    continue
             print 'indexing', fn#, mtime
             with codecs.open(x, encoding='utf-8') as f:
                 try:
@@ -258,6 +260,11 @@ def index_taxa(fresh=False):
 
                 for k,v in d['treesById'].iteritems():
                     for treeid, treedata in v['treeById'].iteritems():
+                        outfname = '{}.{}.{}.ptag.json.gz'.format(
+                            fnbase, treeid, mtime)
+                        p = join(PTAG_DIR, outfname)
+                        if not os.path.exists(p):
+                            continue
                         print 'inserting', treeid
                         nexecs = 0
                         treedata['nexson_file'] = x
@@ -318,7 +325,6 @@ def index_taxa(fresh=False):
 
 def make_ptags():
     g = load_ott_graph()
-    ptagdir = join(PTA_BASE, 'static', 'ptag')
     for git, studies in nexsons:
         for x in studies:
             mtime = git.log('--format=%ct', x).split('\n')[0]
@@ -340,7 +346,7 @@ def make_ptags():
                     for treeid, treedata in v['treeById'].iteritems():
                         outfname = '{}.{}.{}.ptag.json.gz'.format(
                             fnbase, treeid, mtime)
-                        p = join(ptagdir, outfname)
+                        p = join(PTAG_DIR, outfname)
                         if not os.path.exists(p):
                             treedata['nexson_file'] = x
                             treedata['treeid'] = treeid
