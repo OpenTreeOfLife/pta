@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os, treegraph, requests, json
 from gzip import GzipFile
+from collections import defaultdict
 
 def index():
     d = data = None
@@ -64,7 +65,7 @@ def search():
         )
     t = db.main
     f = t.name
-    rv = []
+    rv = []; cit2trees = defaultdict(list)
     if form.process(message_onsuccess=None, keepvalues=True).accepted:
         term = form.vars.search_term
         opt = form.vars.search_option or '0'
@@ -84,7 +85,9 @@ def search():
                          (t.tree_mrca==1))
                     n = db(q).select(t.name, limitby=(0,1)).first().name
                     rv.append((r, n))
-    return dict(form=form, rows=rv)
+            for r, n in rv:
+                cit2trees[r.citation].append((r.treeid, n, r.studyid))
+    return dict(form=form, rows=rv, cit2trees=cit2trees)
 
 def name_search_autocomplete():
     rv = []

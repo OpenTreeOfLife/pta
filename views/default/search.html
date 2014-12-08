@@ -5,23 +5,19 @@
 {{=form}}
 
 {{if rows:}}
-<table>
-<tr><th>Tree</th><th>MRCA</th><th>Citation</th></tr>
-{{for r,m in rows:}}
-<tr>
-<td>{{=A(r.treeid, _href=URL(f='view2',args=[r.studyid,r.treeid]))}}</td>
-<td>{{=m}}</td>
-<td>{{=r.citation}}</td>
-</tr>
+<h4>Search results</h4>
+<ul>
+{{for k in sorted(cit2trees.iterkeys()):}}
+  <li>{{=k}}</li>
+    <ul>
+    {{for treeid, name, studyid in sorted(cit2trees[k]):}}
+      {{x = '{}: {}'.format(treeid, name)}}
+      <li>{{=A(x, _href=URL(f='view2',args=[studyid,treeid]))}}</li>
+    {{pass}}
+    </ul>
 {{pass}}
-</table>
-{{else:}}
-{{if form.vars.search_term:}}
-The taxon appears to be in one or more trees that could not be aligned
-to taxonomy.
+</ul>
 {{pass}}
-{{pass}}
-
 
 <script type="text/javascript">
 $(document).ready( function() {
