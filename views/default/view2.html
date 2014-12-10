@@ -3,7 +3,7 @@
 {{response.files.append("http://d3js.org/d3.v3.min.js")}}
 {{extend 'layout.html'}}
 
-<div style="padding-top:1em">
+<div style="padding-top:1em" id="instructions">
 <p>Mouse wheel: zoom in/out. Click and drag nodes to move them; click the
 background to move the whole graph.</p>
 
@@ -13,16 +13,16 @@ phylogeny; <span style="color:red">red lines</span> trace taxonomy;
 phylogeny and taxonomy.</p>
 </div>
 
+<div id="figure-container"></div>
+
 {{if data:}}
 {{import json}}
-<div class="figure">
 <script type="text/javascript">
-
 $(document).ready(function() {
   // Handler for .ready() called.
     var data={{=data}};
     var w = "100%",
-    h = 700,
+    h = 800,
     cx = w/2,
     cy = h/2,
     fill = d3.scale.category10();
@@ -34,8 +34,7 @@ $(document).ready(function() {
         //if (n.isleaf) { n.fixed = true; }
     });
 
-    var svg = d3.select("div.figure").append("svg:svg")
-
+    var svg = d3.select("#figure-container").append("svg:svg")
         .attr("id", "figure")
         .attr("width", w)
         .attr("height", h);
@@ -203,7 +202,12 @@ $(document).ready(function() {
         }
     }));
 
+    $('#figure-container').resizable({
+	resize: function(event, ui) {
+	    svg.attr("width", ui.size.width);
+	    svg.attr("height", ui.size.height);
+	}
+    });
 });
 </script>
-</div>
 {{pass}}
