@@ -54,12 +54,12 @@ def view2():
 
 def search():
     form = SQLFORM.factory(
-        Field('search_term', requires=IS_NOT_EMPTY(), label='Taxon'),
         Field('search_option', requires=IS_IN_SET((
             ('0', 'represented anywhere in the tree'),
             ('1', 'an OTU mapped to a leaf node(s)'),
             ('2', 'the MRCA of all leaves')
             ), zero=None), label='where taxon is'),
+        Field('search_term', requires=IS_NOT_EMPTY(), label='and named'),
         submit_button='Find trees',
         table_name='myform'
         )

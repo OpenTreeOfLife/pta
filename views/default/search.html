@@ -21,6 +21,7 @@
 
 <script type="text/javascript">
 $(document).ready( function() {
+    $("#myform_search_option").css("width", "auto");
     var u = "{{=URL('default', 'name_search_autocomplete')}}";
     $("#myform_search_term").autocomplete({
 	source: function(request, response) {
