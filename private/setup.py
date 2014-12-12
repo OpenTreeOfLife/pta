@@ -367,6 +367,18 @@ def make_ptags():
                                     print 'FAIL:', fn, treeid
                                     
 
+def taxon_freqs():
+    from collections import Counter
+    c = Counter()
+    for fname in glob(join(PTAG_DIR, '*.ptag.json.gz')):
+        with gzip.open(fname) as f:
+            d = json.load(f)
+        for n in d['nodes']:
+            t = n.get('label')
+            if not t:
+                continue
+            c[t.split()[0]] += 1
+
 def main():
     dbfilename = 'phylesystem-taxon-index.db'
     dbdir = join(PTA_BASE, 'databases')
