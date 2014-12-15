@@ -1,0 +1,502 @@
+[
+  {
+    "freq": 439, 
+    "taxid": 5287301, 
+    "name": "Leotiomyceta"
+  }, 
+  {
+    "freq": 376, 
+    "taxid": 5291459, 
+    "name": "Sordariomyceta"
+  }, 
+  {
+    "freq": 359, 
+    "taxid": 921280, 
+    "name": "Sordariomycetes"
+  }, 
+  {
+    "freq": 333, 
+    "taxid": 5298374, 
+    "name": "Mesangiospermae"
+  }, 
+  {
+    "freq": 332, 
+    "taxid": 346120, 
+    "name": "Dothideomycetes"
+  }, 
+  {
+    "freq": 316, 
+    "taxid": 1098854, 
+    "name": "saccharomyceta"
+  }, 
+  {
+    "freq": 312, 
+    "taxid": 1012685, 
+    "name": "Agaricomycetes"
+  }, 
+  {
+    "freq": 311, 
+    "taxid": 656316, 
+    "name": "Dikarya"
+  }, 
+  {
+    "freq": 307, 
+    "taxid": 5316182, 
+    "name": "Pentapetalae"
+  }, 
+  {
+    "freq": 307, 
+    "taxid": 431495, 
+    "name": "eudicotyledons"
+  }, 
+  {
+    "freq": 298, 
+    "taxid": 332573, 
+    "name": "Opisthokonta"
+  }, 
+  {
+    "freq": 294, 
+    "taxid": 936976, 
+    "name": "Sordariomycetidae"
+  }, 
+  {
+    "freq": 289, 
+    "taxid": 971709, 
+    "name": "Pezizomycotina"
+  }, 
+  {
+    "freq": 283, 
+    "taxid": 853757, 
+    "name": "Gunneridae"
+  }, 
+  {
+    "freq": 283, 
+    "taxid": 99252, 
+    "name": "Magnoliophyta"
+  }, 
+  {
+    "freq": 278, 
+    "taxid": 304358, 
+    "name": "Eukaryota"
+  }, 
+  {
+    "freq": 276, 
+    "taxid": 439373, 
+    "name": "Ascomycota"
+  }, 
+  {
+    "freq": 273, 
+    "taxid": 5291460, 
+    "name": "Dothideomyceta"
+  }, 
+  {
+    "freq": 272, 
+    "taxid": 8364, 
+    "name": "Agaricales"
+  }, 
+  {
+    "freq": 271, 
+    "taxid": 10218, 
+    "name": "Spermatophyta"
+  }, 
+  {
+    "freq": 270, 
+    "taxid": 352914, 
+    "name": "Fungi"
+  }, 
+  {
+    "freq": 264, 
+    "taxid": 634628, 
+    "name": "Basidiomycota"
+  }, 
+  {
+    "freq": 253, 
+    "taxid": 1008296, 
+    "name": "rosids"
+  }, 
+  {
+    "freq": 248, 
+    "taxid": 466678, 
+    "name": "Pleosporales"
+  }, 
+  {
+    "freq": 247, 
+    "taxid": 1007992, 
+    "name": "Euphyllophyta"
+  }, 
+  {
+    "freq": 246, 
+    "taxid": 633300, 
+    "name": "Agaricomycotina"
+  }, 
+  {
+    "freq": 236, 
+    "taxid": 822500, 
+    "name": "Agaricomycetidae"
+  }, 
+  {
+    "freq": 236, 
+    "taxid": 10210, 
+    "name": "Tracheophyta"
+  }, 
+  {
+    "freq": 236, 
+    "taxid": 117569, 
+    "name": "Bilateria"
+  }, 
+  {
+    "freq": 236, 
+    "taxid": 361838, 
+    "name": "Chloroplastida"
+  }, 
+  {
+    "freq": 235, 
+    "taxid": 641038, 
+    "name": "Eumetazoa"
+  }, 
+  {
+    "freq": 231, 
+    "taxid": 5308424, 
+    "name": "Petrosaviidae"
+  }, 
+  {
+    "freq": 231, 
+    "taxid": 936979, 
+    "name": "Hypocreomycetidae"
+  }, 
+  {
+    "freq": 230, 
+    "taxid": 641537, 
+    "name": "Dothideomycetidae"
+  }, 
+  {
+    "freq": 228, 
+    "taxid": 1058517, 
+    "name": "Liliopsida"
+  }, 
+  {
+    "freq": 226, 
+    "taxid": 565277, 
+    "name": "malvids"
+  }, 
+  {
+    "freq": 226, 
+    "taxid": 5246131, 
+    "name": "Holozoa"
+  }, 
+  {
+    "freq": 226, 
+    "taxid": 5268475, 
+    "name": "Archaeplastida"
+  }, 
+  {
+    "freq": 226, 
+    "taxid": 691846, 
+    "name": "Metazoa"
+  }, 
+  {
+    "freq": 225, 
+    "taxid": 656297, 
+    "name": "Pleosporomycetidae"
+  }, 
+  {
+    "freq": 221, 
+    "taxid": 8844, 
+    "name": "Brassicales"
+  }, 
+  {
+    "freq": 221, 
+    "taxid": 5342313, 
+    "name": "Embryophyta"
+  }, 
+  {
+    "freq": 221, 
+    "taxid": 728371, 
+    "name": "Hypocreales"
+  }, 
+  {
+    "freq": 217, 
+    "taxid": 309271, 
+    "name": "Brassicaceae"
+  }, 
+  {
+    "freq": 217, 
+    "taxid": 921871, 
+    "name": "Poales"
+  }, 
+  {
+    "freq": 217, 
+    "taxid": 5246132, 
+    "name": "Nucletmycea"
+  }, 
+  {
+    "freq": 212, 
+    "taxid": 225270, 
+    "name": "commelinids"
+  }, 
+  {
+    "freq": 209, 
+    "taxid": 208367, 
+    "name": "Capnodiales"
+  }, 
+  {
+    "freq": 209, 
+    "taxid": 989996, 
+    "name": "Saccharomycetales"
+  }, 
+  {
+    "freq": 207, 
+    "taxid": 916750, 
+    "name": "Streptophyta"
+  }, 
+  {
+    "freq": 204, 
+    "taxid": 989999, 
+    "name": "Saccharomycetes"
+  }, 
+  {
+    "freq": 204, 
+    "taxid": 5292177, 
+    "name": "Saccharomycetidae"
+  }, 
+  {
+    "freq": 204, 
+    "taxid": 971714, 
+    "name": "Saccharomycotina"
+  }, 
+  {
+    "freq": 203, 
+    "taxid": 346124, 
+    "name": "Eurotiomycetes"
+  }, 
+  {
+    "freq": 202, 
+    "taxid": 1061785, 
+    "name": "Pleosporineae"
+  }, 
+  {
+    "freq": 200, 
+    "taxid": 5344705, 
+    "name": "Leotiomycetidae"
+  }, 
+  {
+    "freq": 199, 
+    "taxid": 153813, 
+    "name": "Sordariales"
+  }, 
+  {
+    "freq": 196, 
+    "taxid": 189832, 
+    "name": "Protostomia"
+  }, 
+  {
+    "freq": 196, 
+    "taxid": 565281, 
+    "name": "fabids"
+  }, 
+  {
+    "freq": 193, 
+    "taxid": 815350, 
+    "name": "Neoptera"
+  }, 
+  {
+    "freq": 192, 
+    "taxid": 633302, 
+    "name": "Polyporales"
+  }, 
+  {
+    "freq": 188, 
+    "taxid": 611099, 
+    "name": "Ecdysozoa"
+  }, 
+  {
+    "freq": 187, 
+    "taxid": 989994, 
+    "name": "Saccharomycetaceae"
+  }, 
+  {
+    "freq": 187, 
+    "taxid": 699905, 
+    "name": "Pleosporaceae"
+  }, 
+  {
+    "freq": 186, 
+    "taxid": 346134, 
+    "name": "Leotiomycetes"
+  }, 
+  {
+    "freq": 186, 
+    "taxid": 632179, 
+    "name": "Arthropoda"
+  }, 
+  {
+    "freq": 185, 
+    "taxid": 1082885, 
+    "name": "Endopterygota"
+  }, 
+  {
+    "freq": 184, 
+    "taxid": 816442, 
+    "name": "Panarthropoda"
+  }, 
+  {
+    "freq": 183, 
+    "taxid": 983656, 
+    "name": "Dicondylia"
+  }, 
+  {
+    "freq": 183, 
+    "taxid": 1048707, 
+    "name": "Pterygota"
+  }, 
+  {
+    "freq": 183, 
+    "taxid": 1062253, 
+    "name": "Insecta"
+  }, 
+  {
+    "freq": 182, 
+    "taxid": 985907, 
+    "name": "Mandibulata"
+  }, 
+  {
+    "freq": 182, 
+    "taxid": 565288, 
+    "name": "Xylariales"
+  }, 
+  {
+    "freq": 182, 
+    "taxid": 104185, 
+    "name": "Nectriaceae"
+  }, 
+  {
+    "freq": 181, 
+    "taxid": 908546, 
+    "name": "Saccharomyces"
+  }, 
+  {
+    "freq": 181, 
+    "taxid": 568991, 
+    "name": "Hexapoda"
+  }, 
+  {
+    "freq": 180, 
+    "taxid": 33903, 
+    "name": "Botryosphaeriaceae"
+  }, 
+  {
+    "freq": 179, 
+    "taxid": 827790, 
+    "name": "Mycosphaerellaceae"
+  }, 
+  {
+    "freq": 179, 
+    "taxid": 985906, 
+    "name": "Pancrustacea"
+  }, 
+  {
+    "freq": 176, 
+    "taxid": 572453, 
+    "name": "Sordariaceae"
+  }, 
+  {
+    "freq": 171, 
+    "taxid": 39538, 
+    "name": "Papilionoideae"
+  }, 
+  {
+    "freq": 171, 
+    "taxid": 1008294, 
+    "name": "asterids"
+  }, 
+  {
+    "freq": 170, 
+    "taxid": 936975, 
+    "name": "Xylariomycetidae"
+  }, 
+  {
+    "freq": 169, 
+    "taxid": 572461, 
+    "name": "Neurospora"
+  }, 
+  {
+    "freq": 168, 
+    "taxid": 504672, 
+    "name": "Camelineae"
+  }, 
+  {
+    "freq": 167, 
+    "taxid": 114654, 
+    "name": "Euteleostomi"
+  }, 
+  {
+    "freq": 167, 
+    "taxid": 147604, 
+    "name": "Deuterostomia"
+  }, 
+  {
+    "freq": 166, 
+    "taxid": 125642, 
+    "name": "Chordata"
+  }, 
+  {
+    "freq": 165, 
+    "taxid": 44252, 
+    "name": "Xylariaceae"
+  }, 
+  {
+    "freq": 165, 
+    "taxid": 309275, 
+    "name": "Arabidopsis"
+  }, 
+  {
+    "freq": 164, 
+    "taxid": 947318, 
+    "name": "Craniata"
+  }, 
+  {
+    "freq": 164, 
+    "taxid": 801601, 
+    "name": "Vertebrata"
+  }, 
+  {
+    "freq": 163, 
+    "taxid": 278114, 
+    "name": "Gnathostomata"
+  }, 
+  {
+    "freq": 163, 
+    "taxid": 114656, 
+    "name": "Teleostomi"
+  }, 
+  {
+    "freq": 162, 
+    "taxid": 5296507, 
+    "name": "Acrogymnospermae"
+  }, 
+  {
+    "freq": 161, 
+    "taxid": 508090, 
+    "name": "Poaceae"
+  }, 
+  {
+    "freq": 159, 
+    "taxid": 596112, 
+    "name": "lamiids"
+  }, 
+  {
+    "freq": 158, 
+    "taxid": 979501, 
+    "name": "Chlorophyta"
+  }, 
+  {
+    "freq": 156, 
+    "taxid": 560323, 
+    "name": "Fabaceae"
+  }, 
+  {
+    "freq": 156, 
+    "taxid": 775740, 
+    "name": "Phytophthora"
+  }
+]

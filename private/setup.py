@@ -374,10 +374,13 @@ def taxon_freqs():
         with gzip.open(fname) as f:
             d = json.load(f)
         for n in d['nodes']:
-            t = n.get('label')
-            if not t:
+            t = n.get('label'); tid = n.get('taxid')
+            if (not tid) or (tid and t and len(t.split()))>1:
                 continue
-            c[t.split()[0]] += 1
+            c[(t,tid)] += 1
+    with open(join(PTA_BASE, 'static', 'taxon-freqs.json'), 'w') as f:
+        json.dump([ dict(name=k[0],freq=v,taxid=k[1]) for k,v in
+                    c.most_common(100) ], f, indent=2)
 
 def main():
     dbfilename = 'phylesystem-taxon-index.db'

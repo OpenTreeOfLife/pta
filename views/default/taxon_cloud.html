@@ -1,0 +1,81 @@
+{{extend 'layout.html'}}
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="span9">
+      <h3 class="panel-title">
+	<a data-toggle="collapse" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+          Phylogeny-taxonomy alignment graphs for the Open Tree of
+          Life
+	</a>
+      </h3>
+      <div id="collapseOne" class="panel-collapse collapse">
+	<div class="panel-body">
+	  <strong>A phylogeny-taxonomy alignment graph (PTAG; manuscript
+	in prep.) is a means of visualizing the congruence, conflict,
+	and complementarity of a phylogenetic tree with the taxonomic
+	hierarchy induced by its OTUs.</strong> This site indexes 
+	PTAGs generated for the roughly 6,000 published phylogenies
+	available in the Open Tree of Life data repository. It also
+	provides a web service for generating PTAGs on demand from
+	NexSON data.
+	</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <div id="wordcloud" style="padding-top:1em" title="Click a name to
+	find matching PTAGs">
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    var fill = d3.scale.category10();
+    var data = {{=XML(data)}};
+    var w = 800, h = 400;
+    d3.layout.cloud().size([w, h])
+        .words(data)
+      // 	.words([
+      //   "Hello", "world", "normally", "you", "want", "more", "words",
+      //   "than", "this"].map(function(d) {
+      //   return {text: d, size: 10 + Math.random() * 90};
+      // }))
+	.padding(1)
+	//.rotate(function() { return ~~(Math.random() * 2) * 180; })
+	.rotate(0)
+	.font("Impact")
+	.fontSize(function(d) { return d.size*0.1; })
+	.on("end", draw)
+	.start();
+
+    function draw(words) {
+	d3.select("#wordcloud")
+	    .append("svg:svg")
+            .attr("id", "figure")
+            .attr("width", w)
+            .attr("height", h)
+	    .append("svg:g")
+	    .attr("transform", "translate("+ w/2 +","+ h/2 +")")
+	    .selectAll("text")
+            .data(words)
+	    .enter().append("svg:text")
+            .style("font-size", function(d) { return d.size + "px"; })
+            .style("font-family", "Impact")
+            .style("fill", function(d, i) { return fill(i); })
+            .attr("text-anchor", "middle")
+            .attr("transform", function(d) {
+		return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+            })
+            .text(function(d) { return d.text; })
+	    .on("click", function(d) {
+		window.open(d.url, "_blank");
+	    })
+	    .attr("cursor", "pointer");
+    }
+});
+</script>

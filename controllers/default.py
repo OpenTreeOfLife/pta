@@ -53,13 +53,17 @@ def view2():
     return dict(data=data)
 
 def search():
+    if len(request.args)==2 and request.args[0]=='taxid':
+        pass
     form = SQLFORM.factory(
         Field('search_option', requires=IS_IN_SET((
             ('0', 'represented anywhere in the tree'),
             ('1', 'an OTU mapped to a leaf node(s)'),
             ('2', 'the MRCA of all leaves')
-            ), zero=None), label='where taxon is'),
-        Field('search_term', requires=IS_NOT_EMPTY(), label='and named'),
+            ), zero=None), label='where taxon is',
+            default=request.vars.search_option or '0'),
+        Field('search_term', requires=IS_NOT_EMPTY(), label='and named',
+              default=request.vars.search_term or ''),
         submit_button='Find trees',
         table_name='myform'
         )
@@ -89,6 +93,16 @@ def search():
                 cit2trees[r.citation].append((r.treeid, n, r.studyid))
     return dict(form=form, rows=rv, cit2trees=cit2trees)
 
+def taxon_cloud():
+    response.files.append("http://d3js.org/d3.v3.min.js")
+    response.files.append(URL('static', 'js/d3.layout.cloud.js'))
+    d = json.load(open('{}/static/taxon-freqs.json'.format(request.folder)))
+    j = json.dumps([ dict(name=x['name'], freq=x['freq'], taxid=x['taxid'],
+                          url=URL('search', args=['taxid', x['taxid']],
+                                  vars=dict(search_option=0)))
+                     for x in d ])
+    return dict(data=j)
+
 def name_search_autocomplete():
     rv = []
     term = request.vars.term or ''
@@ -104,3 +118,6 @@ def name_search_autocomplete():
         rows = db(q).select(f, distinct=True, orderby=f, limitby=(0,25))
         rv = [ x.name for x in rows ]
     return response.json(rv)
+
+
+
