@@ -131,11 +131,6 @@
   }, 
   {
     "freq": 236, 
-    "taxid": 822500, 
-    "name": "Agaricomycetidae"
-  }, 
-  {
-    "freq": 236, 
     "taxid": 10210, 
     "name": "Tracheophyta"
   }, 
@@ -143,6 +138,11 @@
     "freq": 236, 
     "taxid": 117569, 
     "name": "Bilateria"
+  }, 
+  {
+    "freq": 236, 
+    "taxid": 822500, 
+    "name": "Agaricomycetidae"
   }, 
   {
     "freq": 236, 

@@ -11,14 +11,15 @@
       </h3>
       <div id="collapseOne" class="panel-collapse collapse">
 	<div class="panel-body">
-	  <strong>A phylogeny-taxonomy alignment graph (PTAG; manuscript
-	in prep.) is a means of visualizing the congruence, conflict,
-	and complementarity of a phylogenetic tree with the taxonomic
-	hierarchy induced by its OTUs.</strong> This site indexes 
-	PTAGs generated for the roughly 6,000 published phylogenies
-	available in the Open Tree of Life data repository. It also
-	provides a web service for generating PTAGs on demand from
-	NexSON data.
+	  <strong>A phylogeny-taxonomy alignment graph (PTAG;
+	manuscript in prep.) is a means of visualizing the congruence,
+	conflict, and complementarity of a phylogenetic tree with the
+	taxonomic hierarchy induced by its OTUs.</strong> This site
+	indexes PTAGs generated for the roughly 6,000 published
+	phylogenies available in
+	the <a href="https://github.com/OpenTreeOfLife/phylesystem">Open
+	Tree of Life data repository</a>. It also provides a web
+	service for generating PTAGs on demand from NexSON data.
 	</div>
       </div>
     </div>
@@ -45,11 +46,12 @@ $(document).ready(function() {
       //   "than", "this"].map(function(d) {
       //   return {text: d, size: 10 + Math.random() * 90};
       // }))
-	.padding(1)
+	.padding(0)
 	//.rotate(function() { return ~~(Math.random() * 2) * 180; })
 	.rotate(0)
+	.text(function(d) { return d.name; })
 	.font("Impact")
-	.fontSize(function(d) { return d.size*0.1; })
+	.fontSize(function(d) { return d.freq*0.1; })
 	.on("end", draw)
 	.start();
 
@@ -64,14 +66,14 @@ $(document).ready(function() {
 	    .selectAll("text")
             .data(words)
 	    .enter().append("svg:text")
-            .style("font-size", function(d) { return d.size + "px"; })
+            .style("font-size", function(d) { return (d.freq*0.1) + "px"; })
             .style("font-family", "Impact")
             .style("fill", function(d, i) { return fill(i); })
             .attr("text-anchor", "middle")
             .attr("transform", function(d) {
 		return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
             })
-            .text(function(d) { return d.text; })
+            .text(function(d) { return d.name; })
 	    .on("click", function(d) {
 		window.open(d.url, "_blank");
 	    })

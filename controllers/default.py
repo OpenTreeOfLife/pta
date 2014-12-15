@@ -53,23 +53,42 @@ def view2():
     return dict(data=data)
 
 def search():
+    g = treegraph.g
+    search_option = request.vars.search_option or '0'
+    search_term = request.vars.search_term or ''
+    t = db.main
+    f = t.name
+    rv = []; cit2trees = defaultdict(list)
+
     if len(request.args)==2 and request.args[0]=='taxid':
-        pass
+        tid = int(request.args[1])
+        name = g.taxid_unique_name(tid)
+        search_term = name
+        rows = db(f==name).select(t.studyid, t.treeid, t.citation, t.mtime,
+                                  distinct=True)
+        for r in rows:
+            if _ptag_file_exists(r.studyid, r.treeid, r.mtime):
+                q = ((t.studyid==r.studyid)&
+                     (t.treeid==r.treeid)&
+                     (t.tree_mrca==1))
+                n = db(q).select(t.name, limitby=(0,1)).first().name
+                rv.append((r, n))
+        for r, n in rv:
+            cit2trees[r.citation].append((r.treeid, n, r.studyid))
+
     form = SQLFORM.factory(
         Field('search_option', requires=IS_IN_SET((
             ('0', 'represented anywhere in the tree'),
             ('1', 'an OTU mapped to a leaf node(s)'),
             ('2', 'the MRCA of all leaves')
             ), zero=None), label='where taxon is',
-            default=request.vars.search_option or '0'),
+            default=search_option),
         Field('search_term', requires=IS_NOT_EMPTY(), label='and named',
-              default=request.vars.search_term or ''),
+              default=search_term),
         submit_button='Find trees',
         table_name='myform'
         )
-    t = db.main
-    f = t.name
-    rv = []; cit2trees = defaultdict(list)
+
     if form.process(message_onsuccess=None, keepvalues=True).accepted:
         term = form.vars.search_term
         opt = form.vars.search_option or '0'
