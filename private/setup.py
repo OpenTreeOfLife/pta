@@ -401,14 +401,14 @@ def main():
         print 'ptag directory not found; creating {}'.format(ptagdir)
         os.mkdir(ptagdir)
 
-    local_ptags = glob(join(ptagdir,'*.ptag.json.gz'))
+    local_ptags = glob(join(ptagdir,'*.ptag.json'))
     
     if (not local_ptags) or args.fetch_ptags:
         print 'fetching remote ptags...',
-        remote = 'https://dl.dropboxusercontent.com/u/1939917/ptag.tar'
+        remote = 'https://dl.dropboxusercontent.com/u/1939917/ptag.tar.gz'
         sys.stdout.flush()
         r = StringIO(urllib2.urlopen(remote).read())
-        tf = tarfile.open(fileobj=r)
+        tf = tarfile.open(fileobj=r, mode='r:gz')
         d = tempfile.mkdtemp()
         tf.extractall(d)
         cmd = 'rsync -a {} {}'.format(join(d,'ptag'), staticdir)

@@ -43,6 +43,7 @@ def view2():
     ts = treegraph.study_timestamp(studyid)
     ptag = '{}/static/ptag/{}.{}.{}.ptag.json.gz'.format(
         request.folder, studyid, treeid, ts)
+    data = ""
     if os.path.exists(ptag):
         data = XML(GzipFile(ptag).read())
     else:
@@ -51,6 +52,12 @@ def view2():
         r = requests.get(u.format(studyid), params=p)
         data = XML(json.dumps(treegraph.nexson2ptag(r.text, treeid)[treeid]))
     return dict(data=data)
+
+def view3():
+    studyid, treeid = request.args
+    ts = treegraph.study_timestamp(studyid)
+    u = URL('static','/ptag/{}.{}.{}.ptag.json'.format(studyid, treeid, ts))
+    return dict(u=u)
 
 def search():
     g = treegraph.g
@@ -121,6 +128,10 @@ def taxon_cloud():
                                   vars=dict(search_option=0)))
                      for x in d ])
     return dict(data=j)
+
+def test_gunzip():
+    response.files.append(URL('static', 'js/gunzip.min.js'))
+    return dict(u=URL('static', 'ptag/pg_972.tree1905.1402543114.ptag.json.gz'))
 
 def name_search_autocomplete():
     rv = []

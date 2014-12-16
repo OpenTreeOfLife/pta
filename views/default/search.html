@@ -12,7 +12,7 @@
     <ul>
     {{for treeid, name, studyid in sorted(cit2trees[k]):}}
       {{x = '{}: {}'.format(treeid, name)}}
-      <li>{{=A(x, _href=URL(f='view2',args=[studyid,treeid]))}}</li>
+      <li>{{=A(x, _href=URL(f='view3',args=[studyid,treeid]))}}</li>
     {{pass}}
     </ul>
 {{pass}}
