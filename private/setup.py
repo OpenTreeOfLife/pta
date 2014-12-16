@@ -6,6 +6,7 @@ from glob import glob
 from cStringIO import StringIO
 from os.path import dirname, join, isdir
 from git import Git
+from itertools import chain
 
 PTA_BASE = '/home/rree/src/pta'
 PHYLESYSTEM_SHARDS = '/home/rree/src/phylesystem/shards'
@@ -370,8 +371,8 @@ def make_ptags():
 def taxon_freqs():
     from collections import Counter
     c = Counter()
-    for fname in glob(join(PTAG_DIR, '*.ptag.json.gz')):
-        with gzip.open(fname) as f:
+    for fname in glob(join(PTAG_DIR, '*.ptag.json')):
+        with open(fname) as f:
             d = json.load(f)
         for n in d['nodes']:
             t = n.get('label'); tid = n.get('taxid')
@@ -415,5 +416,49 @@ def main():
         subprocess.check_call(cmd.split(), stdout=sys.stdout, stderr=sys.stderr)
         shutil.rmtree(d)
 
-## if __name__ == '__main__':
-##     main()
+def experiment():
+    g = load_ott_graph()
+    x = join(PHYLESYSTEM_SHARDS, 'phylesystem-1/study/pg_14/pg_14/pg_14.json')
+    treeid = 'tree12'
+    with codecs.open(x, encoding='utf-8') as f:
+        d = json.load(f)['nexml']
+    otu_id2data = {}
+    for k,v in d['otusById'].iteritems():
+        for otuid, otudata in v['otuById'].iteritems():
+            assert otuid not in otu_id2data
+            otu_id2data[otuid] = otudata
+
+    treedata = d['treesById'].values()[0]['treeById'][treeid]
+    treedata['treeid'] = treeid
+    r = proctree(treedata, otu_id2data)
+    lvs = r.leaves()
+            
+    rps = [ tg.taxid_rootpath(g, lf.taxid) for lf in lvs if lf.taxid ]
+    mrca = tg.rootpath_mrca(rps)
+    rps = [ p[:p.index(mrca)+1] for p in rps ]
+    taxids = set(chain.from_iterable(rps))
+    taxg = tg.taxid_new_subgraph(g, taxids)
+    taxg.purge_edges()
+    taxg.purge_vertices()
+    tg.map_stree(taxg, r)
+    verts = taxg.new_vertex_property('bool')
+    edges = taxg.new_edge_property('bool')
+
+    # add stree's nodes and branches into taxonomy graph
+    tg.merge_stree(taxg, r, 1, verts, edges)
+
+    # next, add taxonomy edges to taxg connecting 'incertae sedis'
+    # leaves in stree to their containing taxa
+    for lf in r.leaves():
+        if lf.taxid and lf.taxid in taxg.taxid_vertex and lf.incertae_sedis:
+            taxv = taxg.taxid_vertex[lf.taxid]
+            ev = taxg.edge(taxv, lf.v, True)
+            if ev:
+                assert len(ev)==1
+                e = ev[0]
+            else:
+                assert taxg.vertex_index[taxv]!=taxg.vertex_index[lf.v]
+                e = taxg.add_edge(taxv, lf.v)
+            taxg.edge_in_taxonomy[e] = 1
+
+    
