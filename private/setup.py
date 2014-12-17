@@ -1,5 +1,6 @@
 import sys, os, urllib2, subprocess, argparse, tarfile, tempfile, shutil, gzip
 import codecs, sqlite3, json, ivy
+import numpy as np
 import ivy.treegraph as tg
 gt = tg.gt # graph_tool.all
 from glob import glob
@@ -416,10 +417,26 @@ def main():
         subprocess.check_call(cmd.split(), stdout=sys.stdout, stderr=sys.stderr)
         shutil.rmtree(d)
 
+def mismap(r):
+    # r is a mapped tree from tg.map_stree
+    lvs = r.leaves()
+    maxdepth = float(max([ len(list(lf.rootpath())) for lf in lvs ]))
+    for lf in lvs:
+        lf.mismap_factor = len(lf.taxids)/maxdepth
+    a = [ len(lf.taxids)/maxdepth for lf in lvs ]
+        
+
+def outliers(points, m=2):
+    v = np.abs(points-np.median(points))
+    return np.where(np.abs(v - np.mean(v)) > m*np.std(v))[0]
+
 def experiment():
     g = load_ott_graph()
-    x = join(PHYLESYSTEM_SHARDS, 'phylesystem-1/study/pg_14/pg_14/pg_14.json')
-    treeid = 'tree12'
+    ## x = join(PHYLESYSTEM_SHARDS, 'phylesystem-1/study/pg_14/pg_14/pg_14.json')
+    ## treeid = 'tree12'
+    x = join(PHYLESYSTEM_SHARDS,
+             'phylesystem-1/study/pg_71/pg_2071/pg_2071.json')
+    treeid = 'tree4264'
     with codecs.open(x, encoding='utf-8') as f:
         d = json.load(f)['nexml']
     otu_id2data = {}
@@ -428,7 +445,11 @@ def experiment():
             assert otuid not in otu_id2data
             otu_id2data[otuid] = otudata
 
-    treedata = d['treesById'].values()[0]['treeById'][treeid]
+    for dv in d['treesById'].values():
+        if treeid in dv['treeById']:
+            break
+
+    treedata = dv['treeById'][treeid]
     treedata['treeid'] = treeid
     r = proctree(treedata, otu_id2data)
     lvs = r.leaves()
@@ -437,9 +458,8 @@ def experiment():
     mrca = tg.rootpath_mrca(rps)
     rps = [ p[:p.index(mrca)+1] for p in rps ]
     taxids = set(chain.from_iterable(rps))
+
     taxg = tg.taxid_new_subgraph(g, taxids)
-    taxg.purge_edges()
-    taxg.purge_vertices()
     tg.map_stree(taxg, r)
     verts = taxg.new_vertex_property('bool')
     edges = taxg.new_edge_property('bool')
@@ -461,4 +481,12 @@ def experiment():
                 e = taxg.add_edge(taxv, lf.v)
             taxg.edge_in_taxonomy[e] = 1
 
-    
+    # assess monophyly
+    vname = taxg.vp['name']
+    uname = taxg.vp['unique_name']
+    for v in taxg.vertices():
+        if v.in_degree()==0:
+            continue
+        tid = taxg.vertex_taxid[v]
+        if tid:
+            print v, tid, uname[v] or vname[v], bool(taxg.vertex_strees[v]), v.out_degree()
