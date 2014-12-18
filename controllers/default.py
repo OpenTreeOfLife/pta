@@ -34,7 +34,7 @@ def view():
     return dict(data=d)
 
 def _ptag_file_exists(studyid, treeid, mtime):
-    ptag = '{}/static/ptag/{}.{}.{}.ptag.json.gz'.format(
+    ptag = '{}/static/ptag/{}.{}.{}.ptag.json'.format(
         request.folder, studyid, treeid, mtime)
     return os.path.exists(ptag)
 
