@@ -224,6 +224,7 @@ def index_taxa(fresh=False):
              'treeid text not null, '
              'taxid integer not null, '
              'name text not null, '
+             'monophyly_status integer not null default 0, '
              'otu integer not null default 0, '
              'tree_mrca integer not null default 0 '
              ')'))
@@ -276,7 +277,7 @@ def index_taxa(fresh=False):
                         leaf_taxids = set([ x.taxid for x in lvs if x.taxid ])
                         if len(leaf_taxids) < 3:
                             print (treeid, ': only', len(leaf_taxids),
-                                   'leaves mapped, skipping')
+                                   'taxids found, skipping')
                             continue
                         for taxid in leaf_taxids:
                             name = g.taxid_unique_name(taxid)
@@ -322,6 +323,7 @@ def index_taxa(fresh=False):
         cur.execute('create index treeid_idx on main (treeid)')
         cur.execute('create index taxid_idx on main (taxid)')
         cur.execute('create index name_idx on main (name)')
+        cur.execute('create index mono_idx on main (monophyly_status)')
         cur.execute('create index otu_idx on main (otu)')
         cur.execute('create index tree_mrca_idx on main (tree_mrca)')
 
@@ -417,18 +419,78 @@ def main():
         subprocess.check_call(cmd.split(), stdout=sys.stdout, stderr=sys.stderr)
         shutil.rmtree(d)
 
-def mismap(r):
+def mismapped_leaves(r):
     # r is a mapped tree from tg.map_stree
     lvs = r.leaves()
+    thresh = 3.5
     maxdepth = float(max([ len(list(lf.rootpath())) for lf in lvs ]))
-    for lf in lvs:
-        lf.mismap_factor = len(lf.taxids)/maxdepth
-    a = [ len(lf.taxids)/maxdepth for lf in lvs ]
+    a = np.array([ len(lf.taxids)/maxdepth for lf in lvs ])
+    v = np.subtract(a, np.median(a)).clip(min=0)
+    med = np.median(v[v>0])
+    return [ lvs[i] for i in np.nonzero((0.6745 * v/med) > thresh)[0] ]
         
+def index_tree(g, cur, r, studyid, mtime, citation, treeid):
+    # r is the root node after proctree
+    lvs = r.leaves()
+    rps = [ tg.taxid_rootpath(g, lf.taxid) for lf in lvs if lf.taxid ]
+    mrca = tg.rootpath_mrca(rps)
+    rps = [ p[:p.index(mrca)+1] for p in rps ]
+    taxids = set(chain.from_iterable(rps))
 
-def outliers(points, m=2):
-    v = np.abs(points-np.median(points))
-    return np.where(np.abs(v - np.mean(v)) > m*np.std(v))[0]
+    taxg = tg.taxid_new_subgraph(g, taxids)
+    tg.map_stree(taxg, r)
+    verts = taxg.new_vertex_property('bool')
+    edges = taxg.new_edge_property('bool')
+    # add stree's nodes and branches into taxonomy graph
+    tg.merge_stree(taxg, r, 1, verts, edges)
+    v2node = dict([ (n.v, n) for n in r ])
+
+    # next, add taxonomy edges to taxg connecting 'incertae sedis'
+    # leaves in stree to their containing taxa
+    for lf in r.leaves():
+        if lf.taxid and lf.taxid in taxg.taxid_vertex and lf.incertae_sedis:
+            taxv = taxg.taxid_vertex[lf.taxid]
+            ev = taxg.edge(taxv, lf.v, True)
+            if ev:
+                assert len(ev)==1
+                e = ev[0]
+            else:
+                assert taxg.vertex_index[taxv]!=taxg.vertex_index[lf.v]
+                e = taxg.add_edge(taxv, lf.v)
+            taxg.edge_in_taxonomy[e] = 1
+
+    fields = ('studyid, mtime, citation, treeid, taxid, name, '
+              'monophyly_status, otu, tree_mrca')
+    INS = 'insert into main ({}) values (?,?,?,?,?,?,?,?,?)'.format(fields)
+
+    # assess monophyly
+    vname = taxg.vp['name']
+    uname = taxg.vp['unique_name']
+    for v in taxg.vertices():
+        taxid = taxg.vertex_taxid[v]
+        if taxid:
+            name = uname[v] or vname[v]
+            traced = bool(taxg.vertex_strees[v])
+            odeg = v.out_degree()
+
+            mono = 0; otu = 0; mrca = 0
+
+            if not traced:
+                mono = -1
+            if traced and odeg > 1:
+                mono = 1
+
+            if v.in_degree()==0: # root
+                mrca = 1
+
+            if v.out_degree()==0:
+                otu = 1
+        
+            x = (studyid, mtime, citation, treeid, taxid, name, mono, otu, mrca)
+            try:
+                cur.execute(INS, x)
+            except sqlite3.IntegrityError:
+                print studyid, treeid, ': can\'t execute', x
 
 def experiment():
     g = load_ott_graph()
